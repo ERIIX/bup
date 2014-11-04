@@ -24,10 +24,13 @@ def connect(rhost, port, subcmd):
         escapedir = re.sub(r'([^\w/])', r'\\\\\\\1', nicedir)
         buglvl = helpers.atoi(os.environ.get('BUP_DEBUG'))
         force_tty = helpers.atoi(os.environ.get('BUP_FORCE_TTY'))
+        control_path = os.environ.get('BUP_CONTROL_PATH')
         cmd = r"""
                    sh -c PATH=%s:'$PATH BUP_DEBUG=%s BUP_FORCE_TTY=%s bup %s'
                """ % (escapedir, buglvl, force_tty, subcmd)
         argv = ['ssh']
+        if control_path:
+            argv.extend(('-S', control_path))
         if port:
             argv.extend(('-p', port))
         argv.extend((rhost, '--', cmd.strip()))
